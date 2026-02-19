@@ -68,8 +68,11 @@ export function BuyTokensModal({ open, onClose, remainingMs }: BuyTokensModalPro
                   : "border-border bg-secondary/30"
               )}
               onClick={() => {
-                // Stripe integration placeholder
-                alert(`Stripe checkout for ${pkg.tokens} tokens at ${pkg.price} — connect Stripe to enable!`);
+                window.open(
+                  `https://link.payoneer.com/Token?t=20BB066D5B774ACAA6EF2C97DACB34E5&src=pl`,
+                  "_blank",
+                  "noopener,noreferrer"
+                );
               }}
             >
               <div className="text-left">
@@ -89,7 +92,7 @@ export function BuyTokensModal({ open, onClose, remainingMs }: BuyTokensModalPro
         </div>
 
         <p className="text-center text-xs text-muted-foreground">
-          Secure payment · Tokens added instantly
+          Pay via Payoneer · Send payment note with token package · Tokens added manually after confirmation
         </p>
       </div>
     </div>
