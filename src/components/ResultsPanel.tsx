@@ -92,11 +92,13 @@ export function ResultsPanel({ result }: ResultsPanelProps) {
   return (
     <div className="animate-slide-up space-y-5">
       {/* Overall */}
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-card flex flex-col sm:flex-row items-center gap-5">
-        <OverallRing score={result.overallScore} />
-        <div>
+      <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-card flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+        <div className="shrink-0">
+          <OverallRing score={result.overallScore} />
+        </div>
+        <div className="text-center sm:text-left min-w-0">
           <h2 className="text-xl font-bold text-foreground mb-1">Overall Score</h2>
-          <p className="text-muted-foreground leading-relaxed">{result.overallComment}</p>
+          <p className="text-muted-foreground leading-relaxed text-sm sm:text-base">{result.overallComment}</p>
         </div>
       </div>
 
