@@ -17,9 +17,9 @@ function formatCountdown(ms: number): string {
 }
 
 const PACKAGES = [
-  { tokens: 100, price: "$1.99", popular: false },
-  { tokens: 300, price: "$4.99", popular: true },
-  { tokens: 1000, price: "$14.99", popular: false },
+  { tokens: 100, price: "$1.99", popular: false, url: "https://whop.com/100-tokens-e88c" },
+  { tokens: 300, price: "$4.99", popular: true, url: "https://whop.com/300-tokens" },
+  { tokens: 1000, price: "$14.99", popular: false, url: "https://whop.com/1000-tokens-3249" },
 ];
 
 export function BuyTokensModal({ open, onClose, remainingMs }: BuyTokensModalProps) {
@@ -69,7 +69,7 @@ export function BuyTokensModal({ open, onClose, remainingMs }: BuyTokensModalPro
               )}
               onClick={() => {
                 window.open(
-                  `https://link.payoneer.com/Token?t=20BB066D5B774ACAA6EF2C97DACB34E5&src=pl`,
+                  pkg.url,
                   "_blank",
                   "noopener,noreferrer"
                 );
