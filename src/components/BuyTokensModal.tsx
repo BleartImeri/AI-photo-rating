@@ -5,6 +5,7 @@ interface BuyTokensModalProps {
   open: boolean;
   onClose: () => void;
   remainingMs: number;
+  sessionId: string;
 }
 
 function formatCountdown(ms: number): string {
@@ -22,7 +23,7 @@ const PACKAGES = [
   { tokens: 1000, price: "$14.99", popular: false, url: "https://whop.com/1000-tokens-3249" },
 ];
 
-export function BuyTokensModal({ open, onClose, remainingMs }: BuyTokensModalProps) {
+export function BuyTokensModal({ open, onClose, remainingMs, sessionId }: BuyTokensModalProps) {
   if (!open) return null;
 
   return (
@@ -68,11 +69,8 @@ export function BuyTokensModal({ open, onClose, remainingMs }: BuyTokensModalPro
                   : "border-border bg-secondary/30"
               )}
               onClick={() => {
-                window.open(
-                  pkg.url,
-                  "_blank",
-                  "noopener,noreferrer"
-                );
+                const url = `${pkg.url}?metadata[session_id]=${sessionId}`;
+                window.open(url, "_blank", "noopener,noreferrer");
               }}
             >
               <div className="text-left">

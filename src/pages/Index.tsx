@@ -204,7 +204,7 @@ export default function Index() {
         </div>
       </main>
 
-      <BuyTokensModal open={buyOpen} onClose={() => setBuyOpen(false)} remainingMs={wallet.remainingMs} />
+      <BuyTokensModal open={buyOpen} onClose={() => setBuyOpen(false)} remainingMs={wallet.remainingMs} sessionId={sessionId} />
     </div>
   );
 }
