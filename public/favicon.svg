@@ -1,8 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
-  <rect width="100%" height="100%" fill="#001f3f" stroke="#FFD700" stroke-width="5"/>
-  <circle cx="100" cy="100" r="95" fill="#001f3f" stroke="#FFD700" stroke-width="5"/>
-  <path d="M40,80 Q50,40 80,70 Q110,40 130,70 Q150,40 160,80 Q130,120 100,100 Q70,120 40,80 Z" fill="#FFF"/>
-  <path d="M20,100 L60,130 L80,110 L120,130 L140,110 L180,100 L140,70 L120,90 L100,70 L80,90 L60,70 Z" fill="#000"/>
-  <path d="M45,75 L50,70 L55,75 L60,70 L65,75 L70,70 L75,75 L80,70 L85,75 L90,70 L95,75 L100,70 L105,75 L110,70 L115,75 L120,70 L125,75 L130,70 L135,75 L140,70 L145,75 L150,70" fill="none" stroke="#ffd700" stroke-width="2"/>
-  <text x="50%" y="85%" font-family="'Arial', sans-serif" font-size="12" text-anchor="middle" fill="#FFD700">RATE MY PIC</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M32 0c-3.3 0-6.8 1.2-9.6 3.2C19.2 1.2 15.7 0 12 0c-4.4 0-8 3.6-8 8c0 4.4 3.6 8 8 8c3.7 0 7.1-2.5 8.3-6.1c1.7.5 3.4 1 5 2C25.6 10.7 22 14.8 22 20c0 5.2 3.8 9.5 8.7 10.6c1.7 5.8 6.9 10.4 13.3 10.4c7.2 0 13-5.8 13-13c0-7.2-5.8-13-13-13c-1.5 0-3.1.3-4.5.7c-.6-1.9-1.4-3.7-2.6-5.3C33 3.8 32 1.9 32 0z" fill="#f2a900"/><path d="M49 38h-6c-1 0-2 1-2 2v10h-6V40c0-1 1-2 2-2h6c1 0 2 1 2 2v10zM30 40c-1 0-2 1-2 2v10h-6V40c0-1 1-2 2-2h6c1 0 2 1 2 2v10h-6V40c0-1 1-2 2-2h6c1 0 2 1 2 2v10z" fill="#000"/></svg>
