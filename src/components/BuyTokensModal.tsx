@@ -18,9 +18,9 @@ function formatCountdown(ms: number): string {
 }
 
 const PACKAGES = [
-  { tokens: 100, price: "$1.99", popular: false, url: "https://whop.com/100-tokens-e88c" },
-  { tokens: 300, price: "$4.99", popular: true, url: "https://whop.com/300-tokens" },
-  { tokens: 1000, price: "$14.99", popular: false, url: "https://whop.com/1000-tokens-3249" },
+  { tokens: 100, price: "$1.99", popular: false, url: "https://whop.com/joined/100-tokens-e88c/products/100-tokens-47/" },
+  { tokens: 300, price: "$4.99", popular: true, url: "https://whop.com/joined/300-tokens/products/300-tokens-48/" },
+  { tokens: 1000, price: "$14.99", popular: false, url: "https://whop.com/joined/1000-tokens-3249/products/1000-tokens-df/" },
 ];
 
 export function BuyTokensModal({ open, onClose, remainingMs, sessionId }: BuyTokensModalProps) {
