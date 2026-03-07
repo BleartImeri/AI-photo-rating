@@ -1,1 +1,80 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M32 0c-3.3 0-6.8 1.2-9.6 3.2C19.2 1.2 15.7 0 12 0c-4.4 0-8 3.6-8 8c0 4.4 3.6 8 8 8c3.7 0 7.1-2.5 8.3-6.1c1.7.5 3.4 1 5 2C25.6 10.7 22 14.8 22 20c0 5.2 3.8 9.5 8.7 10.6c1.7 5.8 6.9 10.4 13.3 10.4c7.2 0 13-5.8 13-13c0-7.2-5.8-13-13-13c-1.5 0-3.1.3-4.5.7c-.6-1.9-1.4-3.7-2.6-5.3C33 3.8 32 1.9 32 0z" fill="#f2a900"/><path d="M49 38h-6c-1 0-2 1-2 2v10h-6V40c0-1 1-2 2-2h6c1 0 2 1 2 2v10zM30 40c-1 0-2 1-2 2v10h-6V40c0-1 1-2 2-2h6c1 0 2 1 2 2v10h-6V40c0-1 1-2 2-2h6c1 0 2 1 2 2v10z" fill="#000"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Glow background -->
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#b3d9ff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00aaff"/>
+      <stop offset="100%" stop-color="#7b2ff7"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Glow circle -->
+  <ellipse cx="100" cy="75" rx="60" ry="55" fill="url(#glow)"/>
+
+  <!-- Brain outline (circuit style) -->
+  <!-- Left hemisphere -->
+  <path d="M100 30 C85 28, 65 32, 58 45 C50 58, 52 72, 60 80 C66 86, 75 88, 82 87 C85 92, 88 95, 92 97 L100 97"
+    fill="none" stroke="url(#brainGrad)" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Right hemisphere -->
+  <path d="M100 30 C115 28, 135 32, 142 45 C150 58, 148 72, 140 80 C134 86, 125 88, 118 87 C115 92, 112 95, 108 97 L100 97"
+    fill="none" stroke="url(#brainGrad)" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Center line -->
+  <line x1="100" y1="30" x2="100" y2="97" stroke="url(#brainGrad)" stroke-width="2"/>
+
+  <!-- Circuit dots & lines - left -->
+  <circle cx="72" cy="50" r="2.5" fill="#00aaff"/>
+  <line x1="72" y1="50" x2="80" y2="50" stroke="#00aaff" stroke-width="1.5"/>
+  <line x1="80" y1="50" x2="80" y2="60" stroke="#00aaff" stroke-width="1.5"/>
+  <circle cx="80" cy="60" r="2.5" fill="#00aaff"/>
+  <line x1="80" y1="60" x2="90" y2="60" stroke="#00aaff" stroke-width="1.5"/>
+  <circle cx="90" cy="60" r="2" fill="#00aaff"/>
+  <line x1="72" y1="70" x2="85" y2="70" stroke="#00aaff" stroke-width="1.5"/>
+  <circle cx="72" cy="70" r="2.5" fill="#00aaff"/>
+  <line x1="85" y1="70" x2="85" y2="78" stroke="#00aaff" stroke-width="1.5"/>
+  <circle cx="85" cy="78" r="2" fill="#00aaff"/>
+
+  <!-- Circuit dots & lines - right -->
+  <circle cx="128" cy="50" r="2.5" fill="#7b2ff7"/>
+  <line x1="128" y1="50" x2="120" y2="50" stroke="#7b2ff7" stroke-width="1.5"/>
+  <line x1="120" y1="50" x2="120" y2="60" stroke="#7b2ff7" stroke-width="1.5"/>
+  <circle cx="120" cy="60" r="2.5" fill="#7b2ff7"/>
+  <line x1="120" y1="60" x2="110" y2="60" stroke="#7b2ff7" stroke-width="1.5"/>
+  <circle cx="110" cy="60" r="2" fill="#7b2ff7"/>
+  <line x1="128" y1="70" x2="115" y2="70" stroke="#7b2ff7" stroke-width="1.5"/>
+  <circle cx="128" cy="70" r="2.5" fill="#7b2ff7"/>
+  <line x1="115" y1="70" x2="115" y2="78" stroke="#7b2ff7" stroke-width="1.5"/>
+  <circle cx="115" cy="78" r="2" fill="#7b2ff7"/>
+
+  <!-- Stars (4 stars + camera in center) -->
+  <!-- Star 1 (far left) -->
+  <polygon points="55,118 57.5,111 60,118 53,113.5 62,113.5" fill="#1a6fd4"/>
+  <!-- Star 2 (left) -->
+  <polygon points="75,118 77.5,111 80,118 73,113.5 82,113.5" fill="#2d8ef0"/>
+
+  <!-- Camera icon (center) -->
+  <circle cx="100" cy="115" r="9" fill="none" stroke="#2d5bbf" stroke-width="2"/>
+  <circle cx="100" cy="115" r="4" fill="none" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="100" y1="107" x2="100" y2="109" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="107.1" y1="108.9" x2="105.7" y2="110.3" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="108" y1="115" x2="106" y2="115" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="107.1" y1="121.1" x2="105.7" y2="119.7" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="100" y1="123" x2="100" y2="121" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="92.9" y1="121.1" x2="94.3" y2="119.7" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="92" y1="115" x2="94" y2="115" stroke="#2d5bbf" stroke-width="1.5"/>
+  <line x1="92.9" y1="108.9" x2="94.3" y2="110.3" stroke="#2d5bbf" stroke-width="1.5"/>
+
+  <!-- Star 3 (right) -->
+  <polygon points="120,118 122.5,111 125,118 118,113.5 127,113.5" fill="#2d8ef0"/>
+  <!-- Star 4 (far right) -->
+  <polygon points="140,118 142.5,111 145,118 138,113.5 147,113.5" fill="#1a6fd4"/>
+
+  <!-- AI RANKER text -->
+  <text x="100" y="145" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#00aaff">AI </text>
+  <text x="118" y="145" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#555">RANKER</text>
+
+  <!-- Subtitle -->
+  <text x="100" y="160" font-family="Arial, sans-serif" font-size="7" text-anchor="middle" fill="#888">Intelligent Photo Curation</text>
+</svg>
