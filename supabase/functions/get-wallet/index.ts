@@ -10,34 +10,45 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { sessionId } = await req.json();
-    if (!sessionId) {
-      return new Response(JSON.stringify({ error: "Missing sessionId" }), {
-        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+
+    // Verify the user from the Authorization header
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-    );
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, serviceKey);
 
     let { data: wallet } = await supabase
       .from("token_wallets")
       .select("*")
-      .eq("session_id", sessionId)
-      .single();
+      .eq("user_id", user.id)
+      .maybeSingle();
 
     if (!wallet) {
       const { data: newWallet } = await supabase
         .from("token_wallets")
-        .insert({ session_id: sessionId, tokens: 40 })
+        .insert({ user_id: user.id, session_id: user.id, tokens: 40 })
         .select()
         .single();
       wallet = newWallet;
     }
 
-    // Auto-refill check
     const lastRefill = new Date(wallet.last_refill_at).getTime();
     const now = Date.now();
     const twoHoursMs = 2 * 60 * 60 * 1000;
@@ -45,7 +56,7 @@ serve(async (req) => {
       const { data: refilled } = await supabase
         .from("token_wallets")
         .update({ tokens: 40, last_refill_at: new Date().toISOString() })
-        .eq("session_id", sessionId)
+        .eq("user_id", user.id)
         .select()
         .single();
       wallet = refilled;
