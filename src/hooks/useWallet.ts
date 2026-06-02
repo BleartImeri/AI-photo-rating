@@ -1,16 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
-
-const SESSION_KEY = "photo_rater_session_id";
-
-function getOrCreateSessionId(): string {
-  let id = localStorage.getItem(SESSION_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(SESSION_KEY, id);
-  }
-  return id;
-}
+import { useAuth } from "./useAuth";
 
 export interface WalletState {
   tokens: number;
@@ -19,30 +9,29 @@ export interface WalletState {
 }
 
 export function useWallet() {
-  const sessionId = getOrCreateSessionId();
+  const { user } = useAuth();
   const [wallet, setWallet] = useState<WalletState>({ tokens: 40, remainingMs: 0, loading: true });
 
   const fetchWallet = useCallback(async () => {
+    if (!user) return;
     try {
-      const { data, error } = await supabase.functions.invoke("get-wallet", {
-        body: { sessionId },
-      });
+      const { data, error } = await supabase.functions.invoke("get-wallet", { body: {} });
       if (error) throw error;
       setWallet({ tokens: data.tokens, remainingMs: data.remainingMs ?? 0, loading: false });
     } catch (e) {
       console.error("fetchWallet error:", e);
       setWallet((prev) => ({ ...prev, loading: false }));
     }
-  }, [sessionId]);
+  }, [user]);
 
   useEffect(() => {
+    if (!user) return;
     fetchWallet();
-    // Refresh every 30s
     const interval = setInterval(fetchWallet, 30_000);
     return () => clearInterval(interval);
-  }, [fetchWallet]);
+  }, [user, fetchWallet]);
 
-  return { sessionId, wallet, refetch: fetchWallet };
+  // sessionId is kept for backwards-compat (BuyTokensModal Whop metadata)
+  // — now we use the authenticated user id so purchases credit the right account.
+  return { sessionId: user?.id ?? "", wallet, refetch: fetchWallet };
 }
-
-export { getOrCreateSessionId };
