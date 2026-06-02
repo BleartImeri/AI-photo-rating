@@ -22,6 +22,7 @@ export type Database = {
           result: Json | null
           session_id: string
           tokens_spent: number
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -30,6 +31,7 @@ export type Database = {
           result?: Json | null
           session_id: string
           tokens_spent?: number
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -38,6 +40,7 @@ export type Database = {
           result?: Json | null
           session_id?: string
           tokens_spent?: number
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -49,6 +52,7 @@ export type Database = {
           session_id: string
           tokens: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -57,6 +61,7 @@ export type Database = {
           session_id: string
           tokens?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -65,6 +70,7 @@ export type Database = {
           session_id?: string
           tokens?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }

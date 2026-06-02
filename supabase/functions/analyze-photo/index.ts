@@ -10,30 +10,47 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { imageBase64, sessionId } = await req.json();
-
-    if (!imageBase64 || !sessionId) {
-      return new Response(JSON.stringify({ error: "Missing imageBase64 or sessionId" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+    const { imageBase64 } = await req.json();
+    if (!imageBase64) {
+      return new Response(JSON.stringify({ error: "Missing imageBase64" }), {
+        status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Get or create wallet
+    // Verify user from JWT
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const { data: { user }, error: userErr } = await userClient.auth.getUser();
+    if (userErr || !user) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const supabase = createClient(supabaseUrl, serviceKey);
+
+    // Get or create wallet (tied to user_id)
     let { data: wallet } = await supabase
       .from("token_wallets")
       .select("*")
-      .eq("session_id", sessionId)
-      .single();
+      .eq("user_id", user.id)
+      .maybeSingle();
 
     if (!wallet) {
       const { data: newWallet } = await supabase
         .from("token_wallets")
-        .insert({ session_id: sessionId, tokens: 40 })
+        .insert({ user_id: user.id, session_id: user.id, tokens: 40 })
         .select()
         .single();
       wallet = newWallet;
@@ -41,42 +58,36 @@ serve(async (req) => {
 
     const TOKEN_COST = 20;
 
-    // Check tokens
     if (wallet.tokens < TOKEN_COST) {
-      // Check if 2 hours have passed since last_refill_at
       const lastRefill = new Date(wallet.last_refill_at).getTime();
       const now = Date.now();
       const twoHoursMs = 2 * 60 * 60 * 1000;
       const remainingMs = twoHoursMs - (now - lastRefill);
 
       if (remainingMs > 0) {
-        const remainingMins = Math.ceil(remainingMs / 60000);
         return new Response(
           JSON.stringify({
             error: "insufficient_tokens",
             remainingMs,
-            remainingMins,
+            remainingMins: Math.ceil(remainingMs / 60000),
             tokens: wallet.tokens,
           }),
           { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       } else {
-        // Refill tokens
         const { data: refilled } = await supabase
           .from("token_wallets")
           .update({ tokens: 40, last_refill_at: new Date().toISOString() })
-          .eq("session_id", sessionId)
+          .eq("user_id", user.id)
           .select()
           .single();
         wallet = refilled;
       }
     }
 
-    // Call Lovable AI with vision
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
-    // Strip data URL prefix if present and get media type
     let base64Data = imageBase64;
     let mediaType = "image/jpeg";
     if (imageBase64.includes(",")) {
@@ -116,16 +127,8 @@ Be honest and specific. A score of 7+ is good. Below 5 needs major work. Always 
           {
             role: "user",
             content: [
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:${mediaType};base64,${base64Data}`,
-                },
-              },
-              {
-                type: "text",
-                text: "Please analyze this photo and rate it as described.",
-              },
+              { type: "image_url", image_url: { url: `data:${mediaType};base64,${base64Data}` } },
+              { type: "text", text: "Please analyze this photo and rate it as described." },
             ],
           },
         ],
@@ -137,8 +140,7 @@ Be honest and specific. A score of 7+ is good. Below 5 needs major work. Always 
       console.error("AI error:", aiResponse.status, errText);
       if (aiResponse.status === 429) {
         return new Response(JSON.stringify({ error: "Rate limit reached. Please try again in a moment." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       throw new Error(`AI gateway error: ${aiResponse.status}`);
@@ -149,7 +151,6 @@ Be honest and specific. A score of 7+ is good. Below 5 needs major work. Always 
 
     let result;
     try {
-      // Strip possible markdown code fences
       const cleaned = rawContent.replace(/```json?\n?/g, "").replace(/```/g, "").trim();
       result = JSON.parse(cleaned);
     } catch {
@@ -157,16 +158,15 @@ Be honest and specific. A score of 7+ is good. Below 5 needs major work. Always 
       throw new Error("AI returned invalid JSON");
     }
 
-    // Deduct tokens
     const newTokens = wallet.tokens - TOKEN_COST;
     await supabase
       .from("token_wallets")
       .update({ tokens: newTokens })
-      .eq("session_id", sessionId);
+      .eq("user_id", user.id);
 
-    // Save analysis
     await supabase.from("photo_analyses").insert({
-      session_id: sessionId,
+      user_id: user.id,
+      session_id: user.id,
       overall_score: result.overallScore,
       result,
       tokens_spent: TOKEN_COST,

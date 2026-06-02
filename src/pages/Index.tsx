@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Camera, Sparkles, Loader2, ShoppingCart } from "lucide-react";
+import { Camera, Sparkles, Loader2, ShoppingCart, LogOut } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
 import { TokenBar } from "@/components/TokenBar";
@@ -17,6 +18,7 @@ type AnalysisResult = {
 
 export default function Index() {
   const { sessionId, wallet, refetch } = useWallet();
+  const { signOut } = useAuth();
   const { toast } = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
@@ -106,6 +108,14 @@ export default function Index() {
             >
               <ShoppingCart className="w-4 h-4" />
               <span className="hidden sm:inline">Buy tokens</span>
+            </button>
+            <button
+              onClick={signOut}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors text-sm font-semibold"
+              title="Sign out"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Sign out</span>
             </button>
           </div>
         </div>
