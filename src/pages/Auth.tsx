@@ -51,11 +51,11 @@ export default function Auth() {
           options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        toast({
-          title: "Account created",
-          description: "Check your email to confirm it, then sign in here.",
+        await supabase.auth.signInWithPassword({
+          email: parsed.data.email,
+          password: parsed.data.password,
         });
-        setMode("signin");
+        toast({ title: "Welcome!", description: "Account created." });
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: parsed.data.email,
