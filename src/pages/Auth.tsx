@@ -9,7 +9,10 @@ import { useToast } from "@/hooks/use-toast";
 
 const schema = z.object({
   email: z.string().trim().email("Invalid email").max(255),
-  password: z.string().min(6, "Min 6 characters").max(72),
+  password: z.string()
+    .min(3, "Min 3 characters")
+    .max(72)
+    .refine((val) => /\d/.test(val), { message: "Must include at least 1 number" }),
 });
 
 export default function Auth() {
