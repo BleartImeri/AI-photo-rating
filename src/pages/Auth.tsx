@@ -3,7 +3,6 @@ import { useNavigate, Navigate } from "react-router-dom";
 import { Camera, Loader2, Mail, Lock } from "lucide-react";
 import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 
@@ -52,7 +51,11 @@ export default function Auth() {
           options: { emailRedirectTo: window.location.origin },
         });
         if (error) throw error;
-        toast({ title: "Account created", description: "You're signed in!" });
+        toast({
+          title: "Account created",
+          description: "Check your email to confirm it, then sign in here.",
+        });
+        setMode("signin");
       } else {
         const { error } = await supabase.auth.signInWithPassword({
           email: parsed.data.email,
@@ -64,27 +67,6 @@ export default function Auth() {
       const msg = err instanceof Error ? err.message : "Something went wrong";
       toast({ title: "Auth failed", description: msg, variant: "destructive" });
     } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleGoogle = async () => {
-    setSubmitting(true);
-    try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
-      });
-      if (result.error) {
-        toast({
-          title: "Google sign-in failed",
-          description: result.error.message ?? "Try again",
-          variant: "destructive",
-        });
-        setSubmitting(false);
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Google sign-in failed";
-      toast({ title: "Error", description: msg, variant: "destructive" });
       setSubmitting(false);
     }
   };
