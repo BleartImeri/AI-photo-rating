@@ -1,0 +1,1 @@
+ALTER TABLE public.token_wallets ADD COLUMN IF NOT EXISTS last_ad_reward_at timestamptz;

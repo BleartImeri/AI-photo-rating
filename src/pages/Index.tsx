@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Camera, Sparkles, Loader2, ShoppingCart, LogOut } from "lucide-react";
+import { Camera, Sparkles, Loader2, ShoppingCart, LogOut, Gift } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useWallet } from "@/hooks/useWallet";
@@ -7,6 +7,7 @@ import { TokenBar } from "@/components/TokenBar";
 import { UploadZone } from "@/components/UploadZone";
 import { ResultsPanel } from "@/components/ResultsPanel";
 import { BuyTokensModal } from "@/components/BuyTokensModal";
+import { RewardedAdModal } from "@/components/RewardedAdModal";
 import { useToast } from "@/hooks/use-toast";
 
 type AnalysisResult = {
@@ -24,6 +25,7 @@ export default function Index() {
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [buyOpen, setBuyOpen] = useState(false);
+  const [adOpen, setAdOpen] = useState(false);
 
   const handleAnalyze = async () => {
     if (!file) {
@@ -102,6 +104,14 @@ export default function Index() {
             <div className="hidden sm:block min-w-[220px]">
               <TokenBar tokens={wallet.tokens} remainingMs={wallet.remainingMs} loading={wallet.loading} />
             </div>
+            <button
+              onClick={() => setAdOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-secondary border border-border text-foreground text-sm font-semibold hover:bg-secondary/80 transition-colors"
+              title="Watch an ad for 20 tokens"
+            >
+              <Gift className="w-4 h-4" />
+              <span className="hidden sm:inline">Watch ad</span>
+            </button>
             <button
               onClick={() => setBuyOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/10 border border-primary/30 text-primary text-sm font-semibold hover:bg-primary/20 transition-colors"
@@ -215,6 +225,12 @@ export default function Index() {
       </main>
 
       <BuyTokensModal open={buyOpen} onClose={() => setBuyOpen(false)} remainingMs={wallet.remainingMs} sessionId={sessionId} />
+      <RewardedAdModal
+        open={adOpen}
+        onClose={() => setAdOpen(false)}
+        onRewarded={refetch}
+        cooldownRemainingMs={wallet.adRemainingMs}
+      />
     </div>
   );
 }

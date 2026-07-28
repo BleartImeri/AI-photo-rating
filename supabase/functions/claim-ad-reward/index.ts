@@ -6,6 +6,9 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const COOLDOWN_MS = 10 * 60 * 1000;
+const REWARD = 20;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -14,7 +17,6 @@ serve(async (req) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
 
-    // Verify the user from the Authorization header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
@@ -49,31 +51,43 @@ serve(async (req) => {
       wallet = newWallet;
     }
 
-    const lastRefill = new Date(wallet.last_refill_at).getTime();
     const now = Date.now();
-    const twoHoursMs = 2 * 60 * 60 * 1000;
-    if (wallet.tokens < 40 && now - lastRefill >= twoHoursMs) {
-      const { data: refilled } = await supabase
-        .from("token_wallets")
-        .update({ tokens: 40, last_refill_at: new Date().toISOString() })
-        .eq("user_id", user.id)
-        .select()
-        .single();
-      wallet = refilled;
+    const lastAd = wallet.last_ad_reward_at ? new Date(wallet.last_ad_reward_at).getTime() : 0;
+    const sinceLast = now - lastAd;
+
+    if (lastAd && sinceLast < COOLDOWN_MS) {
+      return new Response(
+        JSON.stringify({
+          error: "cooldown",
+          remainingMs: COOLDOWN_MS - sinceLast,
+          tokens: wallet.tokens,
+        }),
+        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
-    const remainingMs = Math.max(0, twoHoursMs - (now - lastRefill));
+    const { data: updated, error: updErr } = await supabase
+      .from("token_wallets")
+      .update({
+        tokens: wallet.tokens + REWARD,
+        last_ad_reward_at: new Date(now).toISOString(),
+      })
+      .eq("user_id", user.id)
+      .select()
+      .single();
 
-    const adCooldownMs = 10 * 60 * 1000;
-    const lastAd = wallet.last_ad_reward_at ? new Date(wallet.last_ad_reward_at).getTime() : 0;
-    const adRemainingMs = lastAd ? Math.max(0, adCooldownMs - (now - lastAd)) : 0;
+    if (updErr) throw updErr;
 
     return new Response(
-      JSON.stringify({ tokens: wallet.tokens, lastRefillAt: wallet.last_refill_at, remainingMs, adRemainingMs }),
+      JSON.stringify({
+        tokens: updated.tokens,
+        rewarded: REWARD,
+        adCooldownMs: COOLDOWN_MS,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {
-    console.error("get-wallet error:", e);
+    console.error("claim-ad-reward error:", e);
     return new Response(
       JSON.stringify({ error: e instanceof Error ? e.message : "Unknown error" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
