@@ -48,6 +48,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          last_ad_reward_at: string | null
           last_refill_at: string
           session_id: string
           tokens: number
@@ -57,6 +58,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          last_ad_reward_at?: string | null
           last_refill_at?: string
           session_id: string
           tokens?: number
@@ -66,6 +68,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          last_ad_reward_at?: string | null
           last_refill_at?: string
           session_id?: string
           tokens?: number
