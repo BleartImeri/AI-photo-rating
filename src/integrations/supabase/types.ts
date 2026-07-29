@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      ad_rewards: {
+        Row: {
+          created_at: string
+          payout: number
+          tokens_awarded: number
+          transaction_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          payout?: number
+          tokens_awarded?: number
+          transaction_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          payout?: number
+          tokens_awarded?: number
+          transaction_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       photo_analyses: {
         Row: {
           created_at: string
